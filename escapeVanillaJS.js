@@ -19,35 +19,35 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("room2Result").textContent = `The code to unlock the door is: ${Array.from(commonConcepts).join(', ')}`;
     });
 
-    // 🪲 Bug: Asynchronous function ?
-    document.getElementById("solveRoom3").addEventListener("click", () => {
-        fetch('directions.json') 
-            .then(response => response.json())
-            .then(directions => {
-                navigateLabyrinth(directions)
-                    .then(message => {
-                        // 🪲 Bug: Incorrect method
-                        document.getElementById("room3Result").innerHTML = message;
-                    });
-            });
-    });
+    // 🪲 Bug: Asynchronous function *** added 'async'
+    document.getElementById("solveRoom3").addEventListener("click", async () => {
+    try {
+        const response = await fetch('directions.json');
+        const directions = await response.json();
+        const message = await navigateLabyrinth(directions);
+        // 🪲 Bug: Incorrect method *** changed from '.innerHTML' to '.textContent'
+        document.getElementById("room3Result").textContent = message; 
+    } catch (error) {
+        console.error("Error fetching directions:", error);
+    }
+});
 });
 
 function findMostRecentBook(books) {
-    // 🪲 Bug: Logic error
-    return books.reduce((mostRecent, book) => new Date(book.published) < new Date(mostRecent.published) ? book : mostRecent);
+    // 🪲 Bug: Logic error *** logic inverted '<' changed to '>'
+    return books.reduce((mostRecent, book) => new Date(book.published) > new Date(mostRecent.published) ? book : mostRecent);
 }
 
 function findIntersection(setA, setB) {
-    // 🪲 Bug: Incorrect logic
-    const intersection = new Set([...setA]);
+    // 🪲 Bug: Incorrect logic *** missing 'setB' or comparison element***
+    const intersection = new Set([...setA].filter(item => setB.has(item)));
     return intersection;
 }
 
 async function navigateLabyrinth(directions) {
     for (let direction of directions) {
-        // 🪲 Bug: No delay
-        new Promise(resolve => setTimeout(resolve, 1000));
+        // 🪲 Bug: No delay *** added 'await' for navigation delay***
+       await new Promise(resolve => setTimeout(resolve, 1000));
         console.log(`Navigating: ${direction.step}`);
     }
     return "Congratulations! You've mastered the essentials of Vanilla JavaScript. Welcome to the world of React, where you'll build powerful and dynamic web applications. Let's dive in!";
